@@ -5,7 +5,7 @@ import SearchBar from '../shared/SearchBar'
 function Header() {
   return (
     <>
-      <header className='container mx-auto bg-slate-100 py-2 lg:py-4'>
+      <header className='container mx-auto bg-gray-50 py-2 lg:py-4'>
         {/* mobile */}
         <div className='flex flex-col justify-between p-2 sm:hidden'>
           <div className='flex items-center'>

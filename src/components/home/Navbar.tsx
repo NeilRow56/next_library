@@ -7,6 +7,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger
 } from '@/components/ui/navigation-menu'
+import { User2Icon } from 'lucide-react'
 
 function Navbar() {
   return (
@@ -76,7 +77,7 @@ function Navbar() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div>User Button</div>
+        <User2Icon />
       </div>
     </nav>
   )

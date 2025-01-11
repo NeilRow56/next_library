@@ -5,7 +5,7 @@ import React from 'react'
 
 function HomeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className='bg-slate-100'>
+    <div className='bg-gray-50'>
       <Header />
       <Navbar />
       {children}
