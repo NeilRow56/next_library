@@ -29,6 +29,7 @@ function Navbar() {
                 <NavigationMenuTrigger className='text-primary'>
                   Library resources
                 </NavigationMenuTrigger>
+
                 <NavigationMenuContent>
                   <ul className='flex flex-col p-4 md:w-[400px] lg:w-[500px]'>
                     <li>

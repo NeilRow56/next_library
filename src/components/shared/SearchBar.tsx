@@ -31,6 +31,7 @@ function SearchBar() {
           <SelectTrigger className='w-full lg:w-[480px]'>
             <SelectValue placeholder='Keyword' />
           </SelectTrigger>
+
           <SelectContent>
             <SelectItem value='title'>Title</SelectItem>
             <SelectItem value='category'>Category</SelectItem>
