@@ -3,16 +3,15 @@
 import * as React from 'react'
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
   Frame,
   GalleryVerticalEnd,
   Library,
   Map,
+  PartyPopperIcon,
   PieChart,
+  Receipt,
   Settings2,
-  SquareTerminal,
   User2Icon
 } from 'lucide-react'
 
@@ -77,7 +76,7 @@ const data = {
     {
       title: 'Activities',
       url: '#',
-      icon: Bot,
+      icon: PartyPopperIcon,
       items: [
         {
           title: 'Activities schedule',
@@ -96,7 +95,7 @@ const data = {
     {
       title: 'Fines',
       url: '#',
-      icon: BookOpen,
+      icon: Receipt,
       items: [
         {
           title: 'Fines schedule',
