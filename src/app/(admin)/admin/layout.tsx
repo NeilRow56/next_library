@@ -22,8 +22,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
           </Breadcrumb>
         </header>
 
-        <div className='container' />
-        {children}
+        <main className='container'>{children}</main>
       </SidebarInset>
     </SidebarProvider>
   )

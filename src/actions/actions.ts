@@ -43,3 +43,19 @@ export async function updateCategory(id: number, name: string, path: string) {
     throw error
   }
 }
+
+export async function deleteCategory(id: number, path: string) {
+  try {
+    await db.$transaction([
+      db.bookCategory.delete({
+        where: {
+          category_id: id
+        }
+      })
+    ])
+
+    revalidatePath(path)
+  } catch (error) {
+    throw error
+  }
+}
