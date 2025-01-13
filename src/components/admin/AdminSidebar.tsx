@@ -31,9 +31,9 @@ import LogoSmall from '../shared/LogoSmall'
 // This is sample data.
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg'
+    name: 'library',
+    email: 'admin@library.com',
+    avatar: '/avatar.png'
   },
   teams: [
     {

@@ -12,6 +12,7 @@ function LogoSmall() {
             src='/logo.png'
             width={45}
             height={30}
+            style={{ width: '100%', height: 'auto' }}
             alt='library logo'
           />
         </Link>
