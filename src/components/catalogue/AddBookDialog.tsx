@@ -33,9 +33,10 @@ import { catalogueSchema } from '@/app/schemas/catalogue'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
-import { Check, ChevronsUpDown } from 'lucide-react'
+import { Check, ChevronsUpDown, Loader } from 'lucide-react'
 import { getCategories } from '@/actions/actions'
 import { usePathname } from 'next/navigation'
+import ImageDropzone from '../shared/ImageDropzone'
 
 type CatalogueProps = {
   open: boolean
@@ -100,6 +101,11 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
 
     form.setValue('category', newValue)
   }
+
+  const handleSubmit = async (values: z.infer<typeof catalogueSchema>) => {
+    console.log(values)
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
@@ -107,7 +113,10 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
           <DialogTitle>Add book</DialogTitle>
           <DialogDescription></DialogDescription>
           <Form {...form}>
-            <form onSubmit={() => {}} className='space-y-4'>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className='space-y-4'
+            >
               <FormField
                 control={form.control}
                 name='name'
@@ -243,6 +252,28 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name='photos'
+                render={({ field }) => (
+                  <ImageDropzone
+                  // photos={field.value}
+                  // onFilesAdded={handleFileAdd}
+                  // onFileDelete={handleFileDelete}
+                  />
+                )}
+              />
+
+              <div className='flex w-full flex-col space-y-2'>
+                {processing ? (
+                  <div className='flex'>
+                    <Loader className='mr-2 animate-spin text-orange-500' />
+                    Saving...
+                  </div>
+                ) : (
+                  <Button type='submit'>Save</Button>
+                )}
+              </div>
             </form>
           </Form>
         </DialogHeader>
