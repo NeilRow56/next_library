@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast'
 import { DataTable } from '@/components/shared/DataTable'
 import ConfirmationDialog from '@/components/shared/ConfirmationDialog'
 import AddBookDialog from '@/components/catalogue/AddBookDialog'
+import { deleteBook } from '@/actions/actions'
 
 type props = {
   data: Book[]
@@ -35,6 +36,16 @@ function CatalogTable({ data }: { data: props }) {
 
   const handleConfirm = async () => {
     setOpenConfirmationDialog(false)
+
+    if (itemToAction) {
+      startTransition(async () => {
+        await deleteBook(itemToAction.bookId, pathname)
+      })
+
+      toast({
+        description: `${itemToAction.name} deleted`
+      })
+    }
   }
   return (
     <>

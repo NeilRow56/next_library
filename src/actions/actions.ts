@@ -197,3 +197,16 @@ export async function updateBook({
     throw error
   }
 }
+
+export async function deleteBook(bookId: number, path: string) {
+  await db.$transaction(
+    async t =>
+      await t.book.delete({
+        where: {
+          bookId: bookId
+        }
+      })
+  )
+
+  revalidatePath(path)
+}
