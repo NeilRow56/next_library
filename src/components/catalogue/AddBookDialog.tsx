@@ -35,6 +35,7 @@ import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { getCategories } from '@/actions/actions'
+import { usePathname } from 'next/navigation'
 
 type CatalogueProps = {
   open: boolean
@@ -47,6 +48,9 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
   const [categories, setCategories] = useState<
     { category_id: number; category_name: string }[]
   >([])
+
+  const [processing, setProcessing] = useState(false)
+  const path = usePathname()
   const form = useForm<z.infer<typeof catalogueSchema>>({
     resolver: zodResolver(catalogueSchema),
     defaultValues: {
@@ -83,6 +87,7 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
     }
   }, [book, form])
 
+  // This is used so that we can select several categories for each book
   const handleItemSelect = (item: number) => {
     const newValue = form.getValues('category').slice()
     const itemIndex = newValue.indexOf(item)
