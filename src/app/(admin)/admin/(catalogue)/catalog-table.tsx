@@ -5,12 +5,11 @@ import { Book, columns } from './columns'
 
 import { usePathname } from 'next/navigation'
 
-import { useToast } from '@/hooks/use-toast'
-
-import { DataTable } from '@/components/shared/DataTable'
-import ConfirmationDialog from '@/components/shared/ConfirmationDialog'
-import AddBookDialog from '@/components/catalogue/AddBookDialog'
 import { deleteBook } from '@/actions/actions'
+import { useToast } from '@/hooks/use-toast'
+import AddBookDialog from '@/components/catalogue/AddBookDialog'
+import ConfirmationDialog from '@/components/shared/ConfirmationDialog'
+import { DataTable } from '@/components/shared/DataTable'
 
 type props = {
   data: Book[]
@@ -57,8 +56,7 @@ function CatalogTable({ data }: { data: props }) {
         onRowDelete={handleRowDelete}
         onRowEdit={handleRowEdit}
       />
-      <AddBookDialog open={open} setOpen={setOpen} />
-
+      <AddBookDialog open={open} setOpen={setOpen} book={itemToAction} />
       <ConfirmationDialog
         open={openConfirmationDialog}
         onClose={() => setOpenConfirmationDialog(false)}
