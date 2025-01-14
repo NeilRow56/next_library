@@ -59,3 +59,24 @@ export async function deleteCategory(id: number, path: string) {
     throw error
   }
 }
+
+export async function getCategories(offset: number, limit: number) {
+  try {
+    let categories
+    let total
+
+    if (limit === -1) {
+      categories = await db.bookCategory.findMany()
+      total = categories.length
+    } else {
+      ;[categories, total] = await db.$transaction([
+        db.bookCategory.findMany({ skip: offset, take: limit }),
+        db.bookCategory.count()
+      ])
+    }
+
+    return { data: categories, total: total }
+  } catch (error) {
+    throw error
+  }
+}
