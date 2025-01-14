@@ -18,8 +18,8 @@ async function CategoriesPage({
   ])
 
   return (
-    <div className='flex flex-col space-y-4'>
-      <div className='flex w-full justify-end p-2'>
+    <div className='flex flex-col space-y-4 p-2'>
+      <div className='flex w-full justify-end'>
         <AddCategoryButton />
       </div>
 
