@@ -80,3 +80,120 @@ export async function getCategories(offset: number, limit: number) {
     throw error
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//              Books
+////////////////////////////////////////////////////////////////////////////////
+export async function addBook({
+  name,
+  isbn,
+  noOfCopies,
+  category,
+  path,
+  photos,
+  publishYear,
+  author
+}: {
+  name: string
+  isbn: string
+  noOfCopies: number
+  category: number[]
+  path: string
+  photos: string[]
+  publishYear: number
+  author: string
+}) {
+  try {
+    await db.$transaction(async t => {
+      const book = await t.book.create({
+        data: {
+          name: name,
+          isbn: isbn,
+          noOfCopies: noOfCopies,
+          publishYear: publishYear,
+          author: author
+        }
+      })
+
+      if (category && category.length > 0) {
+        const data = category.map(cat => ({
+          bookId: book.bookId,
+          categoryId: cat
+        }))
+
+        await t.bookCategoryLink.createMany({ data })
+      }
+
+      // save photos
+      if (photos && photos.length > 0) {
+        const data = photos.map(photo => ({
+          bookId: book.bookId,
+          url: photo
+        }))
+
+        await t.bookPhoto.createMany({ data })
+      }
+
+      revalidatePath(path)
+    })
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateBook({
+  id,
+  name,
+  isbn,
+  noOfCopies,
+  category,
+  path,
+  publishYear,
+  author
+}: {
+  id: number
+  name: string
+  isbn: string
+  noOfCopies: number
+  category: number[]
+  path: string
+  photos: string[]
+  publishYear: number
+  author: string
+}) {
+  try {
+    await db.$transaction(async t => {
+      const book = await t.book.update({
+        where: {
+          bookId: id
+        },
+        data: {
+          name: name,
+          isbn: isbn,
+          noOfCopies: noOfCopies,
+          publishYear: publishYear,
+          author: author
+        }
+      })
+
+      await t.bookCategoryLink.deleteMany({
+        where: {
+          bookId: id
+        }
+      })
+
+      if (category && category.length > 0) {
+        const data = category.map(cat => ({
+          bookId: book.bookId,
+          categoryId: cat
+        }))
+
+        await t.bookCategoryLink.createMany({ data })
+      }
+
+      revalidatePath(path)
+    })
+  } catch (error) {
+    throw error
+  }
+}

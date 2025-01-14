@@ -34,9 +34,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown, Loader } from 'lucide-react'
-import { getCategories } from '@/actions/actions'
+import { addBook, getCategories, updateBook } from '@/actions/actions'
 import { usePathname } from 'next/navigation'
 import ImageDropzone from '../shared/ImageDropzone'
+import { useToast } from '@/hooks/use-toast'
 
 type CatalogueProps = {
   open: boolean
@@ -52,6 +53,8 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
 
   const [processing, setProcessing] = useState(false)
   const path = usePathname()
+  const { toast } = useToast()
+
   const form = useForm<z.infer<typeof catalogueSchema>>({
     resolver: zodResolver(catalogueSchema),
     defaultValues: {
@@ -103,7 +106,23 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
   }
 
   const handleSubmit = async (values: z.infer<typeof catalogueSchema>) => {
-    console.log(values)
+    setProcessing(true)
+
+    let message = 'Book added'
+
+    if (book) {
+      await updateBook({ ...values, path })
+      message = 'book updated'
+      setOpen(false)
+    } else {
+      await addBook({ ...values, path })
+    }
+
+    toast({
+      description: message
+    })
+    form.reset()
+    setProcessing(false)
   }
 
   return (
