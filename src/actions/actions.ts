@@ -210,3 +210,66 @@ export async function deleteBook(bookId: number, path: string) {
 
   revalidatePath(path)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//              Photos
+////////////////////////////////////////////////////////////////////////////////
+export async function addPhoto(
+  table: string,
+  entity_id: number,
+  url: string,
+  path: string
+) {
+  try {
+    const newPhoto = await db.$transaction(async t => {
+      if (table === 'book') {
+        return await t.bookPhoto.create({
+          data: {
+            bookId: entity_id,
+            url: url
+          }
+        })
+      } else if (table === 'activity') {
+        return await t.activityPhoto.create({
+          data: {
+            activityId: entity_id,
+            url: url
+          }
+        })
+      }
+    })
+
+    revalidatePath(path)
+    return {
+      photoId: newPhoto?.photoId as number,
+      url: newPhoto?.url as string
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deletePhoto(table: string, id: number, path: string) {
+  try {
+    const result = await db.$transaction(async t => {
+      if (table === 'book') {
+        await t.bookPhoto.delete({
+          where: {
+            photoId: id
+          }
+        })
+      } else if (table === 'activity') {
+        await t.activityPhoto.delete({
+          where: {
+            photoId: id
+          }
+        })
+      }
+    })
+
+    revalidatePath(path)
+    return result
+  } catch (error) {
+    throw error
+  }
+}

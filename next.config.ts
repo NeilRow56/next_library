@@ -3,6 +3,7 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -13,7 +14,11 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'avatar.vercel.sh' },
       { protocol: 'https', hostname: 'utfs.io' },
       { protocol: 'https', hostname: 'res.cloudinary.com' },
-      { protocol: 'https', hostname: 'images.pexels.com' }
+      { protocol: 'https', hostname: 'images.pexels.com' },
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com'
+      }
     ]
   }
 }

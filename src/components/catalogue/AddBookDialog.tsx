@@ -34,10 +34,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown, Loader } from 'lucide-react'
-import { addBook, getCategories, updateBook } from '@/actions/actions'
+import {
+  addBook,
+  addPhoto,
+  deletePhoto,
+  getCategories,
+  updateBook
+} from '@/actions/actions'
 import { usePathname } from 'next/navigation'
-import ImageDropzone from '../shared/ImageDropzone'
+
 import { useToast } from '@/hooks/use-toast'
+import ImageDropzone from '../shared/ImageDropzone'
 
 type CatalogueProps = {
   open: boolean
@@ -123,6 +130,34 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
     })
     form.reset()
     setProcessing(false)
+  }
+
+  const handleFileAdd = async (filesToUpload: string[]) => {
+    if (book) {
+      const newPhoto = await addPhoto(
+        'book',
+        book.bookId,
+        filesToUpload[0],
+        path
+      )
+
+      if (newPhoto) {
+        book.bookPhotos?.push(newPhoto)
+      }
+    }
+    const existingPhotos = form.getValues('photos')
+    form.setValue('photos', [...existingPhotos, ...filesToUpload])
+  }
+
+  const handleFileDelete = async (url: string) => {
+    if (book) {
+      const photoToDelete = book.bookPhotos?.filter(bp => bp.url === url)
+      if (photoToDelete && photoToDelete.length > 0) {
+        await deletePhoto('book', photoToDelete[0].photoId, path)
+      }
+    }
+    const updatedPhotos = form.getValues('photos').filter(p => p !== url) ?? []
+    form.setValue('photos', updatedPhotos)
   }
 
   return (
@@ -276,9 +311,9 @@ function AddBookDialog({ open, setOpen, book }: CatalogueProps) {
                 name='photos'
                 render={({ field }) => (
                   <ImageDropzone
-                  // photos={field.value}
-                  // onFilesAdded={handleFileAdd}
-                  // onFileDelete={handleFileDelete}
+                    photos={field.value}
+                    onFilesAdded={handleFileAdd}
+                    onFileDelete={handleFileDelete}
                   />
                 )}
               />
