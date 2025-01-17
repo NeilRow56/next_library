@@ -73,7 +73,7 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
       setProcessing(true)
       if (activity) {
         await updateActivity({ ...values, path })
-        message = 'activity updated'
+        message = 'Activity updated'
         setOpen(false)
       } else {
         await addActivity({ ...values, path })
@@ -105,9 +105,11 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 name='title'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel className='font-bold text-primary'>
+                      Title
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder='activity title' {...field} />
+                      <Input placeholder='Activity title' {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -118,11 +120,13 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel className='font-bold text-primary'>
+                      Description
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         maxLength={200}
-                        placeholder='provide a description of the activity'
+                        placeholder='Provide a description of the activity'
                         {...field}
                       />
                     </FormControl>
@@ -144,13 +148,15 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 )}
               />
 
-              <div className='grid grid-cols-1 gap-1 sm:grid-cols-2'>
+              <div className='grid grid-cols-1 gap-3 py-2 sm:grid-cols-2'>
                 <FormField
                   control={form.control}
                   name='startTime'
                   render={({ field }) => (
                     <FormItem className='grid'>
-                      <FormLabel>Start time</FormLabel>
+                      <FormLabel className='font-bold text-primary'>
+                        Start time
+                      </FormLabel>
                       <FormControl>
                         <TimeSelect
                           onChange={field.onChange}
@@ -167,7 +173,9 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                   name='endTime'
                   render={({ field }) => (
                     <FormItem className='grid'>
-                      <FormLabel>End time</FormLabel>
+                      <FormLabel className='font-bold text-primary'>
+                        End time
+                      </FormLabel>
                       <FormControl>
                         <TimeSelect
                           disableTime={form.getValues('startTime')}
@@ -180,15 +188,17 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 />
               </div>
 
-              <div className='grid grid-cols-1 gap-1 sm:grid-cols-2'>
+              <div className='grid grid-cols-1 gap-3 py-2 sm:grid-cols-2'>
                 <FormField
                   control={form.control}
                   name='ageGroup'
                   render={({ field }) => (
                     <FormItem className='grid'>
-                      <FormLabel>Age group</FormLabel>
+                      <FormLabel className='font-bold text-primary'>
+                        Age group
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder='12-17' {...field} />
+                        <Input placeholder='Over 65' {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -199,7 +209,9 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                   name='capacity'
                   render={({ field }) => (
                     <FormItem className='grid'>
-                      <FormLabel>Capacity</FormLabel>
+                      <FormLabel className='font-bold text-primary'>
+                        Capacity
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder='e.g. 10' {...field} />
                       </FormControl>

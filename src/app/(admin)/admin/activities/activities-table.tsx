@@ -10,6 +10,7 @@ import ConfirmationDialog from '@/components/shared/ConfirmationDialog'
 
 import { Activity, columns } from './columns'
 import AddActivityDialog from '@/components/activities/AddActivityDialog'
+import { deleteActivity } from '@/actions/actions'
 
 type props = {
   data: Activity[]
@@ -34,6 +35,16 @@ function ActivitiesTable({ data }: { data: props }) {
 
   const handleConfirm = async () => {
     setOpenConfirmationDialog(false)
+
+    if (itemToAction) {
+      startTransition(async () => {
+        await deleteActivity(itemToAction.activityId, pathname)
+      })
+
+      toast({
+        description: `${itemToAction.title} deleted`
+      })
+    }
   }
 
   return (
