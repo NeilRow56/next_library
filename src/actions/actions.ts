@@ -273,3 +273,120 @@ export async function deletePhoto(table: string, id: number, path: string) {
     throw error
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//              Activities
+////////////////////////////////////////////////////////////////////////////////
+export async function addActivity({
+  title,
+  description,
+  activityDate,
+  startTime,
+  endTime,
+  ageGroup,
+  capacity,
+  photos,
+  path
+}: {
+  title: string
+  description: string
+  activityDate: Date
+  startTime: string
+  endTime: string
+  ageGroup: string
+  capacity: number
+  photos: string[]
+  path: string
+}) {
+  try {
+    await db.$transaction(async t => {
+      const result = await t.activity.create({
+        data: {
+          title: title,
+          description: description,
+          activityDate: activityDate,
+          startTime: startTime,
+          endTime: endTime,
+          ageGroup: ageGroup,
+          capacity: capacity
+        }
+      })
+
+      console.log(result)
+      // save photos
+      if (photos && photos.length > 0) {
+        const data = photos.map(photo => ({
+          activityId: result.activityId,
+          url: photo
+        }))
+
+        await t.activityPhoto.createMany({ data })
+      }
+    })
+
+    revalidatePath(path)
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateActivity({
+  activityId,
+  title,
+  description,
+  activityDate,
+  startTime,
+  endTime,
+  ageGroup,
+  capacity,
+  path
+}: {
+  activityId: number
+  title: string
+  description: string
+  activityDate: Date
+  startTime: string
+  endTime: string
+  ageGroup: string
+  capacity: number
+  path: string
+}) {
+  try {
+    await db.$transaction([
+      db.activity.update({
+        where: {
+          activityId: activityId
+        },
+        data: {
+          title: title,
+          description: description,
+          activityDate: activityDate,
+          startTime: startTime,
+          endTime: endTime,
+          ageGroup: ageGroup,
+          capacity: capacity
+        }
+      })
+    ])
+
+    revalidatePath(path)
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deleteActivity(id: number, path: string) {
+  try {
+    await db.$transaction([
+      db.activity.delete({
+        where: {
+          activityId: id
+        }
+      })
+    ])
+
+    revalidatePath(path)
+  } catch (error) {
+    throw error
+  }
+}

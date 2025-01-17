@@ -1,4 +1,3 @@
-import { Activity } from '@/app/(admin)/admin/activities/columns'
 import React, { useEffect, useState } from 'react'
 import {
   Dialog,
@@ -18,16 +17,19 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
-import { activitiesSchema } from '@/app/schemas/activities'
 import { Input } from '../ui/input'
-import { Textarea } from '../ui/textarea'
-import ImageDropzone from '../shared/ImageDropzone'
-import { useToast } from '@/hooks/use-toast'
-import { usePathname } from 'next/navigation'
-import { Loader } from 'lucide-react'
 import { Button } from '../ui/button'
+import { usePathname } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
+import { Activity } from '@/app/(admin)/admin/activities/columns'
+import { Textarea } from '../ui/textarea'
+
+import { addActivity, updateActivity } from '@/actions/actions'
+import { Loader } from 'lucide-react'
 import DateSelect from '../shared/DateSelect'
 import TimeSelect from '../shared/TimeSelect'
+import ImageDropzone from '../shared/ImageDropzone'
+import { activitiesSchema } from '@/app/schemas/activities'
 
 type Props = {
   open: boolean
@@ -66,14 +68,35 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
   }, [activity, form])
 
   const onSubmit = async (values: z.infer<typeof activitiesSchema>) => {
-    console.log(values)
+    try {
+      let message = 'Activity has been saved'
+      setProcessing(true)
+      if (activity) {
+        await updateActivity({ ...values, path })
+        message = 'activity updated'
+        setOpen(false)
+      } else {
+        await addActivity({ ...values, path })
+      }
+
+      toast({
+        description: message
+      })
+      form.reset()
+      setProcessing(false)
+    } catch (error) {
+      console.log(error)
+      toast({
+        description: 'Failed to perform action'
+      })
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className='text-2xl'>Activities list</DialogTitle>
+          <DialogTitle>List activity</DialogTitle>
           <DialogDescription></DialogDescription>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-1'>
@@ -82,11 +105,9 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 name='title'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='font-bold text-primary'>
-                      Title
-                    </FormLabel>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder='Activity title' {...field} />
+                      <Input placeholder='activity title' {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -97,13 +118,11 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='font-bold text-primary'>
-                      Description
-                    </FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea
                         maxLength={200}
-                        placeholder='Provide a description of the activity'
+                        placeholder='provide a description of the activity'
                         {...field}
                       />
                     </FormControl>
@@ -116,9 +135,7 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 name='activityDate'
                 render={({ field }) => (
                   <FormItem className='grid'>
-                    <FormLabel className='font-bold text-primary'>
-                      Activity date
-                    </FormLabel>
+                    <FormLabel>Activity date</FormLabel>
                     <FormControl>
                       <DateSelect field={field} disableDates={true} />
                     </FormControl>
@@ -127,15 +144,13 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 )}
               />
 
-              <div className='grid grid-cols-1 gap-3 py-2 sm:grid-cols-2'>
+              <div className='grid grid-cols-1 gap-1 sm:grid-cols-2'>
                 <FormField
                   control={form.control}
                   name='startTime'
                   render={({ field }) => (
                     <FormItem className='grid'>
-                      <FormLabel className='font-bold text-primary'>
-                        Start time
-                      </FormLabel>
+                      <FormLabel>Start time</FormLabel>
                       <FormControl>
                         <TimeSelect
                           onChange={field.onChange}
@@ -152,9 +167,7 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                   name='endTime'
                   render={({ field }) => (
                     <FormItem className='grid'>
-                      <FormLabel className='font-bold text-primary'>
-                        End time
-                      </FormLabel>
+                      <FormLabel>End time</FormLabel>
                       <FormControl>
                         <TimeSelect
                           disableTime={form.getValues('startTime')}
@@ -167,17 +180,15 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                 />
               </div>
 
-              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+              <div className='grid grid-cols-1 gap-1 sm:grid-cols-2'>
                 <FormField
                   control={form.control}
                   name='ageGroup'
                   render={({ field }) => (
                     <FormItem className='grid'>
-                      <FormLabel className='font-bold text-primary'>
-                        Age group
-                      </FormLabel>
+                      <FormLabel>Age group</FormLabel>
                       <FormControl>
-                        <Input placeholder='12-17 years of age' {...field} />
+                        <Input placeholder='12-17' {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -188,9 +199,7 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
                   name='capacity'
                   render={({ field }) => (
                     <FormItem className='grid'>
-                      <FormLabel className='font-bold text-primary'>
-                        Capacity
-                      </FormLabel>
+                      <FormLabel>Capacity</FormLabel>
                       <FormControl>
                         <Input placeholder='e.g. 10' {...field} />
                       </FormControl>
