@@ -31,3 +31,53 @@ export function formatISBN(isbn: string) {
 
   return 'INVALID' // Invalid ISBN
 }
+
+export type ReturnType = {
+  time: string
+  display: string
+}
+
+export function getAvatarLetter(name: string) {
+  return name.split(' ')[0].charAt(0).toUpperCase()
+}
+
+export function getTimeSlots(
+  startTime = '08:00',
+  endTime = '18:00'
+): ReturnType[] {
+  const timeArray: ReturnType[] = []
+  const parsedStartTime: Date = new Date(`2000-01-01T${startTime}:00`)
+  const parsedEndTime: Date = new Date(`2000-01-01T${endTime}:00`)
+
+  const currentTime: Date = parsedStartTime
+  while (currentTime <= parsedEndTime) {
+    const hours = currentTime.getHours().toString().padStart(2, '0')
+    const minutes = currentTime.getMinutes().toString().padStart(2, '0')
+    const ampm = currentTime.getHours() < 12 ? 'AM' : 'PM'
+    const timeString = `${hours}:${minutes} ${ampm}`
+    timeArray.push({
+      time: `${hours}:${minutes}`,
+      display: timeString
+    })
+
+    currentTime.setMinutes(currentTime.getMinutes() + 30)
+  }
+
+  return timeArray
+}
+
+/*
+  credit: https://medium.com/@sungbinkim98
+*/
+export const getDateWithOffset = (date: Date) => {
+  if (typeof date === 'string') {
+    const datePart = (date as string).split('T')[0]
+    const fd = new Date(
+      new Date(datePart).getTime() + new Date().getTimezoneOffset() * 60000
+    )
+    return fd
+  }
+
+  const dt = new Date()
+  return new Date(date.getTime() + dt.getTimezoneOffset() * 60000)
+}

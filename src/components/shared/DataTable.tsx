@@ -30,6 +30,7 @@ import { pageSize } from '@/lib/utils'
 import DataTableFilterInput from './DataTableInputFilter'
 import { DataTableViewOptions } from './DataTableViewOptions'
 import { DataTablePagination } from './DataTablePagination'
+import { EmptyState } from './EmptyState'
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -147,9 +148,13 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  <h2 className='text-2xl font-bold text-primary'>
+                  {/* <h2 className='text-2xl font-bold text-primary'>
                     No Results
-                  </h2>
+                  </h2> */}
+                  <EmptyState
+                    description='Please add data'
+                    title='No details provided '
+                  />
                 </TableCell>
               </TableRow>
             )}

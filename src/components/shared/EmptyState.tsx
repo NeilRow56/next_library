@@ -5,14 +5,11 @@ import Link from 'next/link'
 interface iAppProps {
   title: string
   description: string
-  buttontext: string
-  href: string
 }
 
 export function EmptyState({
-  buttontext,
   description,
-  href,
+
   title
 }: iAppProps) {
   return (
@@ -24,9 +21,6 @@ export function EmptyState({
       <p className='max-w-xm mx-auto mb-8 mt-2 text-center text-sm text-muted-foreground'>
         {description}
       </p>
-      <Link href={href} className={buttonVariants()}>
-        <PlusCircle className='mr-2 size-4' /> {buttontext}
-      </Link>
     </div>
   )
 }
