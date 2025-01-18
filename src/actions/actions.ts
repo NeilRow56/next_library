@@ -481,3 +481,45 @@ export async function deleteUser(id: number, path: string) {
     throw error
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//              Fines
+////////////////////////////////////////////////////////////////////////////////
+export async function markAsPaid(id: number, path: string) {
+  try {
+    await db.$transaction(async transaction => {
+      await transaction.fine.update({
+        where: {
+          fineId: id
+        },
+        data: {
+          paidDate: new Date()
+        }
+      })
+    })
+
+    revalidatePath(path)
+
+    return { message: 'Fine paid' }
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deleteFine(id: number, path: string) {
+  try {
+    await db.$transaction(async transaction => {
+      await transaction.fine.delete({
+        where: {
+          fineId: id
+        }
+      })
+    })
+
+    revalidatePath(path)
+
+    return { message: 'Fine deleted' }
+  } catch (error) {
+    throw error
+  }
+}

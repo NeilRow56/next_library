@@ -9,6 +9,7 @@ import { DataTable } from '@/components/shared/DataTable'
 import ConfirmationDialog from '@/components/shared/ConfirmationDialog'
 
 import { Fine, columns } from './columns'
+import { deleteFine, markAsPaid } from '@/actions/actions'
 
 type props = {
   data: Fine[]
@@ -43,10 +44,10 @@ function FinesTable({ data }: { data: props }) {
 
     if (itemToAction) {
       if (dialogReason === 'delete') {
-        // await deleteFine(itemToAction.fineId, pathname)
+        await deleteFine(itemToAction.fineId, pathname)
         toast({ description: `fine deleted` })
       } else if (dialogReason === 'paid') {
-        // markAsPaid(itemToAction.fineId, pathname)
+        markAsPaid(itemToAction.fineId, pathname)
         toast({ description: `fine deleted` })
       }
     }
