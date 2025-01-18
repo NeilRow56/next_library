@@ -61,6 +61,7 @@ function AddUserDialog({ setOpen, open, user }: Props) {
   useEffect(() => {
     if (user) {
       form.setValue('userId', user.userId)
+      form.setValue('name', user.name)
       form.setValue('email', user.email)
       form.setValue('libraryCardNo', user.libraryCardNo)
       form.setValue('role', user.role)

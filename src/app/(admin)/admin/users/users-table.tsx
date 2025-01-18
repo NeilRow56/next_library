@@ -9,8 +9,9 @@ import { DataTable } from '@/components/shared/DataTable'
 import ConfirmationDialog from '@/components/shared/ConfirmationDialog'
 
 import { User, columns } from './columns'
-import AddActivityDialog from '@/components/activities/AddActivityDialog'
+
 import AddUserDialog from '@/components/users/AddUserDialog'
+import { deleteUser } from '@/actions/actions'
 
 type props = {
   data: User[]
@@ -35,6 +36,16 @@ function UsersTable({ data }: { data: props }) {
 
   const handleConfirm = async () => {
     setOpenConfirmationDialog(false)
+
+    if (itemToAction) {
+      startTransition(async () => {
+        await deleteUser(itemToAction.userId, pathname)
+      })
+
+      toast({
+        description: `${itemToAction.name} deleted`
+      })
+    }
   }
 
   return (
