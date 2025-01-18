@@ -77,7 +77,38 @@ export const getDateWithOffset = (date: Date) => {
     )
     return fd
   }
-
+  // If date not a string
   const dt = new Date()
   return new Date(date.getTime() + dt.getTimezoneOffset() * 60000)
+}
+
+export function formatAmountForDisplay(
+  amount: number,
+  currency: string
+): string {
+  const numberFormat = new Intl.NumberFormat(['en-GB'], {
+    style: 'currency',
+    currency: currency,
+    currencyDisplay: 'symbol'
+  })
+
+  const formatedAmount = numberFormat.format(amount)
+
+  return formatedAmount === '$NaN' ? '' : formatedAmount
+}
+
+export function formatAmountForStripe(
+  amount: number,
+  currency: string
+): number {
+  const numberFormat = new Intl.NumberFormat(['en-US'], {
+    style: 'currency',
+    currency: currency,
+    currencyDisplay: 'symbol'
+  })
+
+  const parts = numberFormat.formatToParts(amount)
+  const hadDecimals = parts.some(part => part.type === 'decimal')
+
+  return hadDecimals ? Math.round(amount * 100) : amount
 }
