@@ -312,7 +312,6 @@ export async function addActivity({
         }
       })
 
-      console.log(result)
       // save photos
       if (photos && photos.length > 0) {
         const data = photos.map(photo => ({
