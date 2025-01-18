@@ -229,7 +229,7 @@ function AddActivityDialog({ setOpen, open, activity }: Props) {
               <div className='flex w-full flex-col space-y-2'>
                 {processing ? (
                   <div className='flex'>
-                    <Loader className='mr-2' />
+                    <Loader className='mr-2 animate-spin' />
                     Saving...
                   </div>
                 ) : (

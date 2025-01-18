@@ -2,6 +2,7 @@
 
 import db from '@/lib/db'
 import { revalidatePath } from 'next/cache'
+import bcrypt from 'bcryptjs'
 
 ////////////////////////////////////////////////////////////////////////////////
 //              Category
@@ -385,6 +386,97 @@ export async function deleteActivity(id: number, path: string) {
     ])
 
     revalidatePath(path)
+  } catch (error) {
+    throw error
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//              Users
+////////////////////////////////////////////////////////////////////////////////
+export async function addUser(
+  name: string,
+  email: string,
+  libraryCardNo: string,
+  role: string,
+  isActive: boolean,
+  path: string
+) {
+  try {
+    const hashPassword = await bcrypt.hash('password', 10)
+
+    const user = await db.$transaction([
+      db.user.create({
+        data: {
+          name: name,
+          email: email,
+          libraryCardNo: libraryCardNo,
+          role: role,
+          isActive: isActive,
+          password: role === 'staff' ? hashPassword : '',
+          image: '',
+          profileStatus: role === 'staff' ? 'pending' : ''
+        }
+      })
+    ])
+
+    revalidatePath(path)
+    return user
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateUser(
+  userId: number,
+  name: string,
+  email: string,
+  libraryCardNo: string,
+  role: string,
+  isActive: boolean,
+  path: string
+) {
+  if (!userId) return { message: 'Missing data is required' }
+
+  try {
+    // use transaction. If book creation fails we don't want to create category links
+    await db.$transaction(async transaction => {
+      await transaction.user.update({
+        where: {
+          userId: userId
+        },
+        data: {
+          name: name,
+          email: email,
+          role: role,
+          libraryCardNo: libraryCardNo,
+          isActive: isActive
+        }
+      })
+    })
+
+    if (path) revalidatePath(path)
+
+    return { message: 'user updated' }
+  } catch (error) {
+    //return { message: 'Database Error: Failed to Update User.' };
+    throw error
+  }
+}
+
+export async function deleteUser(id: number, path: string) {
+  try {
+    const result = await db.$transaction(async transaction => {
+      await transaction.user.delete({
+        where: {
+          userId: id
+        }
+      })
+    })
+
+    revalidatePath(path)
+
+    return result
   } catch (error) {
     throw error
   }
