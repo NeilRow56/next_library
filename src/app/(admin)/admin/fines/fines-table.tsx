@@ -1,6 +1,6 @@
 'use client'
 
-import React, { startTransition, useState } from 'react'
+import React, { useState } from 'react'
 
 import { usePathname } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'

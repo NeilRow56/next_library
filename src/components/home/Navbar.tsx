@@ -8,8 +8,11 @@ import {
   NavigationMenuTrigger
 } from '@/components/ui/navigation-menu'
 import { User2Icon } from 'lucide-react'
+import { addWeeks, format } from 'date-fns'
 
 function Navbar() {
+  const from = format(new Date(), 'yyyy-MM-dd')
+  const to = format(addWeeks(new Date(), 2), 'yyyy-MM-dd')
   return (
     <nav className='hidden w-full bg-primary text-white sm:block'>
       <div className='container mx-auto flex items-center justify-between py-4'>
@@ -20,7 +23,10 @@ function Navbar() {
           <Link href='/locations' className='hover:text-gray-400'>
             Locations
           </Link>
-          <Link href={'/'} className='hover:text-gray-400'>
+          <Link
+            href={`/activities?from=${from}&to=${to}`}
+            className='hover:text-gray-400'
+          >
             Activities
           </Link>
           <NavigationMenu>

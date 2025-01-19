@@ -33,6 +33,7 @@ async function FinesPage({
   return (
     <div className='flex flex-col space-y-4 p-2'>
       <FinesTable
+        // We need to parse the fines because the fine amount is a decimal
         data={{ data: JSON.parse(JSON.stringify(fines)), total: total }}
       />
     </div>
