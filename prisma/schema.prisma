@@ -159,7 +159,7 @@ model StaffPick {
   @@index([bookId], map: "bookId")
   @@index([userId], map: "userId")
 
-   @@map("staff_picks")
+   @@map("staffPicks")
 }
 model User {
   userId          Int            @id @default(autoincrement())
