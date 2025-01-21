@@ -1,3 +1,4 @@
+import UserButton from '@/components/shared/UserButton'
 import {
   Carousel,
   CarouselContent,
@@ -8,8 +9,13 @@ import {
 import db from '@/lib/db'
 import Image from 'next/image'
 import Link from 'next/link'
+import { auth } from '../utils/auth'
+import SignInButton from '@/components/home/SignInButton'
+import SignOutButton from '@/components/home/SignOutButton'
 
 export default async function Home() {
+  const session = await auth()
+
   const arrivals = await db.book.findMany({
     skip: 0,
     take: 10,
@@ -26,6 +32,7 @@ export default async function Home() {
     <>
       <div className='container mx-auto flex flex-col justify-center space-y-16 p-16 sm:p-32'>
         {/* New Arrivals */}
+
         <div>
           <h2 className='pb-4 pl-4 text-2xl font-bold'>New arrivals</h2>
           <Carousel
@@ -55,6 +62,7 @@ export default async function Home() {
           </Carousel>
         </div>
         <h2>Recently reviewed</h2>
+
         {/* Add recently reviewed */}
         <h2>Staff picks</h2>
         {/* Add staff picks */}

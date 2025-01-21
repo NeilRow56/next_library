@@ -161,13 +161,14 @@ model StaffPick {
 
    @@map("staffPicks")
 }
+
 model User {
   userId          Int            @id @default(autoincrement())
   email           String         @unique(map: "email") @db.VarChar(100)
   name            String         @db.VarChar(80)
-  image           String         @db.VarChar(190)
-  password        String         @db.VarChar(100)
-  libraryCardNo   String         @db.VarChar(10)
+  image           String          @db.VarChar(190)
+  password        String          @db.VarChar(100)
+  libraryCardNo   String          @db.VarChar(10)
   profileStatus   String?        @db.VarChar(10)
   role            String         @db.VarChar(10)
   isActive        Boolean        @default(true)
@@ -182,3 +183,4 @@ model User {
 
    @@map("users")
 }
+

@@ -5,7 +5,7 @@ import { Separator } from '../ui/separator'
 
 function Footer() {
   return (
-    <footer className='space-y-2 bg-primary/60 p-8'>
+    <footer className='space-y-2 rounded-t-md bg-primary/60 p-8'>
       <div className='flex space-x-4 text-sm text-white md:text-base'>
         <Link href='#'>Contact us</Link>
         <Link href='#'>Privacy and terms</Link>
