@@ -3,6 +3,8 @@
 import db from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 import bcrypt from 'bcryptjs'
+import { auth } from '@/app/utils/auth'
+import { addDays } from 'date-fns'
 
 ////////////////////////////////////////////////////////////////////////////////
 //              Category
@@ -210,6 +212,92 @@ export async function deleteBook(bookId: number, path: string) {
   )
 
   revalidatePath(path)
+}
+
+export async function placeHold(bookId: number, path: string) {
+  const session = await auth()
+
+  if (!session) {
+    throw new Error('You must be logged in')
+  }
+
+  //The unary plus (+) operator precedes its operand and evaluates to its operand but attempts to convert it into a number, if it isn't already.
+
+  //Its called non-null assertion operator. Its telling the compiler that you are sure that the value won't be null or undefined. It's a way to assert to the TypeScript compiler that you've manually checked that a value isn't null and you're telling it to proceed without emitting a null check.
+
+  await db.$transaction(t =>
+    t.reservation.create({
+      data: {
+        bookId: +bookId,
+        userId: session?.user.userId,
+        reservationDate: new Date(),
+        expirationDate: addDays(new Date(), 15)
+      }
+    })
+  )
+
+  revalidatePath(path)
+}
+
+export async function cancelHold(id: number, path: string) {
+  await db.$transaction(t =>
+    t.reservation.delete({
+      where: {
+        reservationId: id
+      }
+    })
+  )
+
+  revalidatePath(path)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//              Staff picks
+////////////////////////////////////////////////////////////////////////////////
+export async function addToStaffPicks(bookId: number, path: string) {
+  const session = await auth()
+
+  if (!session) {
+    throw new Error('You must be logged in')
+  }
+
+  try {
+    await db.$transaction([
+      db.staffPick.create({
+        data: {
+          bookId: bookId,
+          userId: +session?.user.id!,
+          pickDate: new Date()
+        }
+      })
+    ])
+
+    revalidatePath(path)
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function removeFromStaffPicks(pickId: number, path: string) {
+  const session = await auth()
+
+  if (!session) {
+    throw new Error('You must be logged in')
+  }
+
+  try {
+    await db.$transaction([
+      db.staffPick.delete({
+        where: {
+          pickId: pickId
+        }
+      })
+    ])
+
+    revalidatePath(path)
+  } catch (error) {
+    throw error
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -522,4 +610,38 @@ export async function deleteFine(id: number, path: string) {
   } catch (error) {
     throw error
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//              Rating
+////////////////////////////////////////////////////////////////////////////////
+export async function addRating(
+  bookId: number,
+  prevState: State,
+  formData: FormData
+) {
+  const session = await auth()
+
+  if (!session) {
+    return { message: 'You must be logged in' }
+  }
+
+  await db.$transaction([
+    db.rating.create({
+      data: {
+        bookId: bookId,
+        userId: session?.user.userId,
+        rating: +formData.get('rating')!,
+        review: formData.get('comment')?.toString()
+      }
+    })
+  ])
+
+  return {
+    message: 'Thank you for your review'
+  }
+}
+
+export type State = {
+  message?: string | null
 }

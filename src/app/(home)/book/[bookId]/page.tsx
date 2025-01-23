@@ -1,38 +1,70 @@
+import { auth } from '@/app/utils/auth'
+import AddToStaffPickButton from '@/components/home/AddToStaffPickButton'
+import CancelHoldButton from '@/components/home/CancelHoldButton'
+
+import CommentBox from '@/components/home/CommentBox'
+import CommentCard from '@/components/home/CommentCard'
+import PlaceHoldButton from '@/components/home/PlaceHoldButton'
+import Rating from '@/components/home/Rating'
+import RemoveFromStaffPicksButton from '@/components/home/RemoveFromStaffPicksButton'
+
 import BackButton from '@/components/shared/BackButton'
 import { Separator } from '@/components/ui/separator'
 import db from '@/lib/db'
 
 import { BookOpen } from 'lucide-react'
 import Image from 'next/image'
-
+import Link from 'next/link'
 import React from 'react'
 
 async function BookDetailsPage({ params }: { params: { bookId: number } }) {
+  const session = await auth()
   const p = await params
-  const [bookDetails] = await db.$transaction([
-    db.book.findUnique({
-      where: {
-        bookId: +p.bookId
-      },
-      include: {
-        ratings: {
-          select: {
-            rating: true
-          }
+  const [bookDetails, stats, reservation_count, reservation] =
+    await db.$transaction([
+      db.book.findUnique({
+        where: {
+          bookId: +p.bookId
         },
-        bookPhotos: {
-          select: { url: true }
-        },
-        bookCategoryLinks: {
-          include: {
-            bookCategories: {
-              select: { category_name: true }
+        include: {
+          ratings: {
+            select: {
+              rating: true
+            }
+          },
+          bookPhotos: {
+            select: { url: true }
+          },
+          staffPicks: {
+            select: {
+              userId: true,
+              pickId: true
+            }
+          },
+          bookCategoryLinks: {
+            include: {
+              bookCategories: {
+                select: { category_name: true }
+              }
             }
           }
         }
-      }
-    })
-  ])
+      }),
+      db.rating.aggregate({
+        _avg: { rating: true },
+        _count: { rating: true },
+        where: { bookId: +p.bookId }
+      }),
+      db.reservation.count({
+        where: { bookId: +p.bookId }
+      }),
+      db.reservation.findFirst({
+        where: {
+          bookId: +p.bookId,
+          userId: session?.user.userId
+        }
+      })
+    ])
 
   const copies_available = () => {
     if (bookDetails?.noOfCopies) {
@@ -100,9 +132,36 @@ async function BookDetailsPage({ params }: { params: { bookId: number } }) {
               <span className='font-bold'>{copies_available()}</span> available
             </p>
             <p className='text-sm'>
-              <span className='font-bold'>Reservation Count</span> on hold
+              <span className='font-bold'>{reservation_count}</span> on hold
             </p>
           </div>
+          {bookDetails?.bookId &&
+            (session?.user ? (
+              reservation?.reservationId ? (
+                <CancelHoldButton reservationId={reservation.reservationId} />
+              ) : (
+                <PlaceHoldButton bookId={bookDetails.bookId} />
+              )
+            ) : (
+              <Link
+                href={`/auth/signin?callbackUrl=/book/${bookDetails.bookId}`}
+                className='rounded-sm border bg-gray-500 p-2 text-white'
+              >
+                Place hold
+              </Link>
+            ))}
+          {bookDetails?.bookId &&
+            session?.user &&
+            session.user.role === 'staff' &&
+            (bookDetails &&
+            bookDetails.staffPicks &&
+            bookDetails.staffPicks.length > 0 ? (
+              <RemoveFromStaffPicksButton
+                pickId={+bookDetails.staffPicks[0].pickId}
+              />
+            ) : (
+              <AddToStaffPickButton bookId={bookDetails.bookId} />
+            ))}
         </div>
       </div>
       <Separator className='mb-2 mt-2' />

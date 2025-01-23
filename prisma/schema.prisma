@@ -77,7 +77,7 @@ model ActivityPhoto {
   url         String     @db.VarChar(1024)
   createdAt   DateTime?  @default(now()) @db.Timestamp(0)
   updatedAt   DateTime?  @default(now()) @db.Timestamp(0)
-  activities  Activity @relation(fields: [activityId], references: [activityId], onDelete: Cascade, onUpdate: NoAction, map: "activityPhotosIbfk_1")
+  activities  Activity @relation(fields: [activityId], references: [activityId], onDelete: Cascade, onUpdate: NoAction, map: "activity_photos_ibfk_1")
   @@index([activityId])
 
    @@map("activity_photos")
@@ -88,7 +88,7 @@ model BookPhoto {
   url        String    @db.VarChar(1024)
   createdAt  DateTime? @default(now()) @db.Timestamp(0)
   updatedAt  DateTime? @default(now()) @db.Timestamp(0)
-  books      Book     @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction, map: "bookPhotosIbfk_1")
+  books      Book     @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction, map: "book_photos_ibfk_1")
   @@index([bookId])
 
    @@map("book_photos")
@@ -100,8 +100,8 @@ model Borrowing {
   borrowDate   DateTime  @db.Date
   dueDate      DateTime  @db.Date
   returnDate   DateTime? @db.Date
-  books        Book     @relation(fields: [bookId], references: [bookId], onDelete: NoAction, onUpdate: NoAction, map: "borrowingsIbfk_1")
-  users        User     @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "borrowingsIbfk_2")
+  books        Book     @relation(fields: [bookId], references: [bookId], onDelete: NoAction, onUpdate: NoAction, map: "borrowings_ibfk_1")
+  users        User     @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "borrowings_ibfk_2")
   fines        Fine[]
   @@index([bookId])
   @@index([userId])
@@ -115,8 +115,8 @@ model Fine {
   fineAmount   Decimal    @db.Decimal(10, 2)
   fineDate     DateTime   @db.Date
   paidDate     DateTime?  @db.Date
-  borrowings   Borrowing @relation(fields: [borrowingId], references: [borrowingId], onDelete: NoAction, onUpdate: NoAction, map: "finesIbfk_1")
-  users        User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "finesIbfk_2")
+  borrowings   Borrowing @relation(fields: [borrowingId], references: [borrowingId], onDelete: NoAction, onUpdate: NoAction, map: "fines_ibfk_1")
+  users        User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fines_ibfk_2")
   @@index([borrowingId], map: "borrowingId")
   @@index([userId])
 
@@ -129,7 +129,7 @@ model Rating {
   rating     Int      
   review     String?  @db.Text
   createdAt  DateTime @default(now()) @db.Timestamp(0)
-  books      Book    @relation(fields: [bookId], references: [bookId], onDelete: NoAction, onUpdate: NoAction, map: "ratingsIbfk_1")
+  books      Book    @relation(fields: [bookId], references: [bookId], onDelete: NoAction, onUpdate: NoAction, map: "ratings_ibfk_1")
   users      User    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "ratings_ibfk_2")
   @@index([bookId])
   @@index([userId])
@@ -142,8 +142,8 @@ model Reservation {
   userId           Int
   reservationDate  DateTime @db.Date
   expirationDate   DateTime @db.Date
-  books            Book    @relation(fields: [bookId], references: [bookId], onDelete: NoAction, onUpdate: NoAction, map: "reservationsIbfk_1")
-  users            User    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "reservationsIbfk_2")
+  books            Book    @relation(fields: [bookId], references: [bookId], onDelete: NoAction, onUpdate: NoAction, map: "reservations_ibfk_1")
+  users            User   @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "reservations_ibfk_2")
   @@index([bookId])
   @@index([userId])
 
@@ -154,8 +154,8 @@ model StaffPick {
   bookId    Int
   userId    Int
   pickDate  DateTime @db.Date
-  books     Book    @relation(fields: [bookId], references: [bookId], onDelete: NoAction, onUpdate: NoAction, map: "staffPicksIbfk_1")
-  users     User    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "staffPicksIbfk_2")
+  books     Book    @relation(fields: [bookId], references: [bookId], onDelete: NoAction, onUpdate: NoAction, map: "staffPicks_ibfk_1")
+  users     User    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "staffPicks_ibfk_2")
   @@index([bookId], map: "bookId")
   @@index([userId], map: "userId")
 

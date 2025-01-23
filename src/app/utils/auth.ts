@@ -7,11 +7,13 @@ import db from '@/lib/db'
 declare module 'next-auth' {
   interface Session {
     user: {
+      userId: number
       role?: string
     } & DefaultSession['user']
   }
 
   interface User {
+    userId?: number
     role?: string
   }
 }
@@ -67,7 +69,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
+        token.id = user.userId
         token.email = user.email
         token.name = user.name
         token.role = user.role
