@@ -3,8 +3,9 @@
 import db from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 import bcrypt from 'bcryptjs'
-import { auth } from '@/app/utils/auth'
+import { auth, signIn, signOut } from '@/app/utils/auth'
 import { addDays } from 'date-fns'
+import { z } from 'zod'
 
 ////////////////////////////////////////////////////////////////////////////////
 //              Category
@@ -567,6 +568,69 @@ export async function deleteUser(id: number, path: string) {
     return result
   } catch (error) {
     throw error
+  }
+}
+
+const passwordFormSchema = z.object({
+  new_password: z.string().min(8)
+})
+
+export async function updateProfile(prevState: State, formData: FormData) {
+  const new_password = formData.get('new_password') as string
+  const old_password = formData.get('old_password') as string
+
+  const session = await auth()
+
+  if (!session) {
+    await signIn()
+  }
+
+  const user = await db.user.findUnique({
+    where: {
+      userId: session?.user.userId,
+      email: session?.user.email as string
+    }
+  })
+
+  if (!user) {
+    return { message: 'Invalid user' }
+  }
+
+  if (new_password) {
+    const passwordValidate = passwordFormSchema.safeParse({
+      new_password: new_password
+    })
+
+    if (!passwordValidate.success) {
+      return { message: 'Invalid password' }
+    }
+
+    const password_match = await bcrypt.compare(old_password, user.password)
+
+    if (!password_match) {
+      return { message: 'Invalid password' }
+    }
+
+    const new_hash_password = bcrypt.hashSync(new_password, 10)
+
+    await db.user.update({
+      where: {
+        userId: session?.user.userId,
+        email: session?.user.email as string
+      },
+      data: {
+        password: new_hash_password,
+        profileStatus: ''
+      }
+    })
+
+    await signOut({
+      redirectTo: `/auth/signin?callbackUrl=${encodeURIComponent('/admin')}&message=${encodeURIComponent('password updated, Please log in.')}`
+    })
+  }
+
+  return {
+    message: 'profile updated'
   }
 }
 

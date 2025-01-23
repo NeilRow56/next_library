@@ -9,12 +9,16 @@ declare module 'next-auth' {
     user: {
       userId: number
       role?: string
+      profileStatus?: string | null
+      isActive?: boolean
     } & DefaultSession['user']
   }
 
   interface User {
     userId?: number
+    profileStatus?: string | null
     role?: string
+    isActive?: boolean
   }
 }
 
@@ -73,6 +77,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email
         token.name = user.name
         token.role = user.role
+        token.profileStatus = user.profileStatus
+        token.isActve = user.isActive
       }
 
       return token
@@ -84,6 +90,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.email = token.email as string
         session.user.name = token.name as string
         session.user.role = token.role as string
+        session.user.profileStatus = token.profileStatus as string
+        session.user.isActive = token.isActive as boolean
       }
 
       return session
