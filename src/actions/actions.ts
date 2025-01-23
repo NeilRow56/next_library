@@ -4,7 +4,7 @@ import db from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 import bcrypt from 'bcryptjs'
 import { auth, signIn, signOut } from '@/app/utils/auth'
-import { addDays } from 'date-fns'
+import { addDays, addMonths, differenceInCalendarDays } from 'date-fns'
 import { z } from 'zod'
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -250,6 +250,118 @@ export async function cancelHold(id: number, path: string) {
   )
 
   revalidatePath(path)
+}
+////////////////////////////////////////////////////////////////////////////////
+//              Kiosk sim
+////////////////////////////////////////////////////////////////////////////////
+
+export async function checkoutBook(prevState: State, formData: FormData) {
+  const library_card_no = formData.get('library_card_no') as string
+  const isbn = formData.get('isbn')?.toString().replaceAll('-', '')
+
+  const book = await db.book.findFirst({
+    where: {
+      isbn: isbn
+    },
+    select: {
+      bookId: true,
+      name: true
+    }
+  })
+
+  const user = await db.user.findFirst({
+    where: {
+      libraryCardNo: library_card_no
+    }
+  })
+
+  if (book && user) {
+    const date = new Date()
+    await db.$transaction(
+      async t =>
+        await t.borrowing.create({
+          data: {
+            bookId: book.bookId,
+            userId: user.userId,
+            borrowDate: date,
+            dueDate: addDays(date, 15)
+          }
+        })
+    )
+
+    return {
+      message: `You have checked out ${book.name}`
+    }
+  }
+
+  return {
+    message: `Checkout failed. See a librarian`
+  }
+}
+
+export async function checkinBook(prevState: State, formData: FormData) {
+  const isbn = formData.get('isbn')?.toString().replaceAll('-', '')
+  const book = await db.book.findFirst({
+    where: {
+      isbn: isbn
+    },
+    select: {
+      bookId: true,
+      name: true
+    }
+  })
+
+  const borrowing = await db.borrowing.findFirst({
+    where: {
+      bookId: book?.bookId
+    }
+  })
+
+  if (!borrowing) {
+    return {
+      message: 'Invalid transaction'
+    }
+  }
+
+  const user_id = borrowing?.userId
+  const return_date = addMonths(new Date(), 1)
+  const diffInDays = differenceInCalendarDays(
+    return_date,
+    borrowing?.dueDate as Date
+  )
+  let message = ''
+
+  await db.$transaction(async t => {
+    await t.borrowing.update({
+      where: {
+        borrowingId: borrowing?.borrowingId
+      },
+      data: {
+        returnDate: return_date
+      }
+    })
+
+    if (diffInDays > 0) {
+      // $0.50 penalty
+      const fineAmount = diffInDays * 0.5
+      await t.fine.create({
+        data: {
+          fineDate: return_date,
+          fineAmount: fineAmount,
+          userId: user_id,
+          borrowingId: borrowing?.borrowingId
+        }
+      })
+
+      message = `${book?.name} checked in. You have a fine of $${fineAmount}`
+    } else {
+      message = `${book?.name} checked in `
+    }
+  })
+
+  return {
+    message: message
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
